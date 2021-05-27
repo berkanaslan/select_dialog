@@ -11,6 +11,9 @@ typedef Widget ErrorBuilderType<T>(BuildContext context, dynamic exception);
 typedef Widget ButtonBuilderType(BuildContext context, VoidCallback onPressed);
 
 class SelectDialog<T> extends StatefulWidget {
+  final Key inputFieldKey;
+  final Key onTapKey;
+
   final T? selectedValue;
   final List<T>? multipleSelectedValues;
   final List<T>? itemsList;
@@ -149,7 +152,8 @@ class _SelectDialogState<T> extends State<SelectDialog<T>> {
   late MultipleItemsBloc<T> multipleItemsBloc;
   void Function(T)? onChange;
 
-  _SelectDialogState(List<T>? itemsList, this.onChange, void Function(List<T>)? onMultipleItemsChange, List<T>? multipleSelectedValues, Future<List<T>> Function(String text)? onFind, TextEditingController? findController) {
+  _SelectDialogState(List<T>? itemsList, this.onChange, void Function(List<T>)? onMultipleItemsChange, List<T>? multipleSelectedValues,
+      Future<List<T>> Function(String text)? onFind, TextEditingController? findController) {
     bloc = SelectOneBloc(itemsList, onFind, findController);
     multipleItemsBloc = MultipleItemsBloc(multipleSelectedValues, onMultipleItemsChange);
   }
@@ -179,9 +183,11 @@ class _SelectDialogState<T> extends State<SelectDialog<T>> {
         maxHeight: MediaQuery.of(context).size.height * 0.7,
       );
 
-  SelectOneItemBuilderType<T> get itemBuilder => widget.itemBuilder ?? (context, item, isSelected) => ListTile(title: Text(item.toString()), selected: isSelected);
+  SelectOneItemBuilderType<T> get itemBuilder =>
+      widget.itemBuilder ?? (context, item, isSelected) => ListTile(title: Text(item.toString()), selected: isSelected);
 
-  ButtonBuilderType get okButtonBuilder => widget.okButtonBuilder ?? (context, onPressed) => ElevatedButton(child: Text("Ok"), onPressed: onPressed);
+  ButtonBuilderType get okButtonBuilder =>
+      widget.okButtonBuilder ?? (context, onPressed) => ElevatedButton(child: Text("Ok"), onPressed: onPressed);
 
   @override
   Widget build(BuildContext context) {
@@ -195,11 +201,13 @@ class _SelectDialogState<T> extends State<SelectDialog<T>> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                key: widget.inputFieldKey,
                 controller: bloc.findController,
                 focusNode: bloc.focusNode,
                 maxLines: widget.searchBoxMaxLines,
                 minLines: widget.searchBoxMinLines,
-                decoration: widget.searchBoxDecoration?.copyWith(hintText: widget.searchHint ?? widget.searchBoxDecoration!.hintText) ?? InputDecoration(hintText: widget.searchHint ?? "Find", contentPadding: const EdgeInsets.all(2.0)),
+                decoration: widget.searchBoxDecoration?.copyWith(hintText: widget.searchHint ?? widget.searchBoxDecoration!.hintText) ??
+                    InputDecoration(hintText: widget.searchHint ?? "Find", contentPadding: const EdgeInsets.all(2.0)),
               ),
             ),
           Expanded(
@@ -224,6 +232,7 @@ class _SelectDialogState<T> extends State<SelectDialog<T>> {
                       bool isSelected = multipleItemsBloc.selectedItems.contains(item);
                       isSelected = isSelected || item == widget.selectedValue;
                       return InkWell(
+                        key: widget.onTapKey,
                         child: itemBuilder(context, item, isSelected),
                         onTap: () {
                           if (isMultipleItems) {
