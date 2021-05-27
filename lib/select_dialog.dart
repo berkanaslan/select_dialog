@@ -11,8 +11,8 @@ typedef Widget ErrorBuilderType<T>(BuildContext context, dynamic exception);
 typedef Widget ButtonBuilderType(BuildContext context, VoidCallback onPressed);
 
 class SelectDialog<T> extends StatefulWidget {
-  final Key inputFieldKey;
-  final Key onTapKey;
+  final Key? inputFieldKey;
+  final Key? onTapKey;
 
   final T? selectedValue;
   final List<T>? multipleSelectedValues;
@@ -72,10 +72,14 @@ class SelectDialog<T> extends StatefulWidget {
     this.searchBoxMaxLines = 1,
     this.searchBoxMinLines = 1,
     this.findController,
+    this.inputFieldKey,
+    this.onTapKey,
   }) : super(key: key);
 
   static Future<T?> showModal<T>(
     BuildContext context, {
+    Key? inputFieldKey,
+    Key? onTapKey,
     List<T>? items,
     String? label,
     T? selectedValue,
@@ -130,6 +134,8 @@ class SelectDialog<T> extends StatefulWidget {
             searchBoxMaxLines: searchBoxMaxLines,
             searchBoxMinLines: searchBoxMinLines,
             findController: findController,
+            inputFieldKey: inputFieldKey,
+            onTapKey: onTapKey,
           ),
         );
       },
